@@ -1,23 +1,39 @@
 import axios from 'axios';
-import type { Note, NotePost, NoteId } from '@/types/note';
+import type { Note, NotePost } from '../types/note';
 
-interface NotesHttpResponse {
+export type NoteId = Note['id'];
+
+export interface NotesHttpResponse {
   notes: Note[];
   totalPages: number;
 }
 
+interface FetchNotesParam {
+  search: string;
+  page: number;
+  perPage: number;
+  tag?: string;
+}
+
 export const fetchNotes = async (
   query: string,
-  page: number
+  page: number,
+  tag?: string
 ): Promise<NotesHttpResponse> => {
+  const params: FetchNotesParam = {
+    search: query,
+    page: page,
+    perPage: 12,
+  };
+
+  if (tag && tag.toLowerCase() !== 'all') {
+    params.tag = tag;
+  }
+
   const response = await axios.get<NotesHttpResponse>(
     'https://notehub-public.goit.study/api/notes',
     {
-      params: {
-        search: query,
-        page: page,
-        perPage: 12,
-      },
+      params,
       headers: {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_NOTEHUB_TOKEN}`,
       },
@@ -26,6 +42,7 @@ export const fetchNotes = async (
 
   return response.data;
 };
+
 export const fetchNoteById = async (id: string): Promise<Note> => {
   const response = await axios.get<Note>(
     `https://notehub-public.goit.study/api/notes/${id}`,

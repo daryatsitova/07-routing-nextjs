@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useDebouncedCallback } from 'use-debounce';
-
 import toast, { Toaster } from 'react-hot-toast';
+import { fetchNotes, NotesHttpResponse } from '@/lib/api';
+
 import css from './NotesPage.module.css';
 
 import NoteList from '@/components/NoteList/NoteList';
-import { fetchNotes } from '@/lib/api';
 import ErrorMessage from '@/components/ErrorMessage/ErrorMessage';
 import Loader from '@/components/Loader/Loader';
 import Pagination from '@/components/Pagination/Pagination';
@@ -16,7 +16,11 @@ import Modal from '@/components/Modal/Modal';
 import NoteForm from '@/components/NoteForm/NoteForm';
 import SearchBox from '@/components/SearchBox/SearchBox';
 
-export default function App() {
+interface AppClientProps {
+  tag: string | undefined;
+}
+
+export default function AppClient({ tag }: AppClientProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [query, setQuery] = useState('');
@@ -35,10 +39,11 @@ export default function App() {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const { data, isLoading, isError, isSuccess } = useQuery({
-    queryKey: ['notes', debouncedQuery, currentPage],
-    queryFn: () => fetchNotes(debouncedQuery, currentPage),
+  const { data, isLoading, isError, isSuccess } = useQuery<NotesHttpResponse>({
+    queryKey: ['notes', { query: debouncedQuery, page: currentPage, tag }],
+    queryFn: () => fetchNotes(debouncedQuery, currentPage, tag),
     placeholderData: keepPreviousData,
+    refetchOnMount: false,
   });
 
   const totalPages = data?.totalPages ?? 0;
