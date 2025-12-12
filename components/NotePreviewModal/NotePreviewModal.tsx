@@ -1,6 +1,6 @@
 'use client';
 
-import css from './Modal.module.css';
+import css from './NotePreviewModal.module.css';
 
 type NotePreviewModalProps = {
   children: React.ReactNode;
