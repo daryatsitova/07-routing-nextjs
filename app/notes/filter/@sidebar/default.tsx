@@ -2,8 +2,8 @@ import css from './SidebarNotes.module.css';
 import Link from 'next/link';
 
 const tags: string[] = [
-  'All',
-  'Todo', 
+  'all',     
+  'Todo',    
   'Work',
   'Personal',
   'Meeting',
@@ -16,7 +16,7 @@ export default function SidebarNotes() {
       {tags.map(tag => (
         <li key={tag} className={css.menuItem}>
           <Link href={`/notes/filter/${tag}`} className={css.menuLink}>
-            {tag === 'All' ? 'All notes' : tag}
+            {tag === 'all' ? 'All notes' : tag}
           </Link>
         </li>
       ))}
